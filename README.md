@@ -4,4 +4,4 @@ This is a silly wallet checker for dogecoin lol and this is open source so you c
 
 inspiration by Kornet's kanyee.fit & Kaitlyn & Maddie's Snowhost! Massive credits to them because they are just so awesome sauce!
 
-# Website: shibbischecker.netlify.app
+# Website: ???
