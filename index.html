@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>shiba checker - a service by keo</title>
+<link rel="icon" type="image/png" href="assets/dogecoin-dark_resized.png">
+
+<style>
+  body {
+    background: #0f172a;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .card {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0);
+    display: inline-block;
+    width: 320px;
+  }
+
+  h1 {
+    font-size: 2.2em;
+  }
+
+  input {
+    width: 90%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    margin-top: 10px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: gold;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .doge {
+    font-size: 2em;
+    margin-top: 10px;
+  }
+
+  .mood {
+    margin-top: 10px;
+    font-size: 1.3em;
+  }
+
+  .moon {
+    color: gold;
+    font-size: 1.5em;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+    100% { transform: translateY(0); }
+  }
+
+  .bounce {
+    animation: bounce 0.5s;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1> shibbis checkings</h1>
+
+  <!-- giffy -->
+  <img id="dogeGif"
+       src="https://media1.tenor.com/m/OMkfyNg_stYAAAAC/shiba-inu.gif"
+       style="width:200px; border-radius:15px; margin-top:10px;">
+
+  <!-- pricing -->
+  <p id="price">Fetching price...</p>
+
+  <!-- input for your wallet -->
+  <input id="address" placeholder="Enter Dogecoin Address">
+  <button onclick="checkWallet()">check the wallet</button>
+
+  <!-- balancings -->
+  <div class="doge" id="balance"> balance: --</div>
+
+  <!-- united state moneis -->
+  <p id="usd">united money: --</p>
+
+  <!-- enriquee mood shit -->
+  <div class="mood" id="mood"> waiting...</div>
+
+  <!-- luna -->
+  <div id="moonText"></div>
+
+  <button onclick="updatePrice()">Refresh the Price</button>
+
+  <footer> API's are from CoinGecko and BlockCypher and Shibbis Checking is made by keo, we are not affiliated with either company or The Dogecoin Foundation.</footer>
+
+
+<script>
+let lastPrice = 0;
+let lastBalance = 0;
+
+// the function of the prices
+async function updatePrice() {
+  try {
+    let res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd");
+    let data = await res.json();
+
+    let price = data.dogecoin.usd;
+
+    document.getElementById("price").innerText = "💵 Price: $" + price;
+
+    let doge = document.getElementById("dogeGif");
+    let moon = document.getElementById("moonText");
+    let mood = document.getElementById("mood");
+
+    if (price > lastPrice) {
+      mood.innerText = "happi shiba";
+
+      doge.classList.add("bounce");
+      setTimeout(() => doge.classList.remove("bounce"), 500);
+
+      if (price - lastPrice > 0.01) {
+        moon.innerText = "🚀 TO THE MOON 🚀";
+        moon.classList.add("moon");
+      } else {
+        moon.innerText = "";
+      }
+
+    } else if (price < lastPrice) {
+      mood.innerText = "😔 depression 64 shiba";
+      moon.innerText = "";
+    } else {
+      mood.innerText = "😐 okish shiba";
+      moon.innerText = "";
+    }
+
+    lastPrice = price;
+
+  } catch {
+    document.getElementById("price").innerText = "⚠️ price failed";
+  }
+}
+
+// 🐶 WALLET FUNCTION
+async function checkWallet() {
+  let addr = document.getElementById("address").value;
+
+  if (!addr) {
+    alert("enter a wallet address you dumbo 😭");
+    return;
+  }
+
+  try {
+    let res = await fetch("https://api.blockcypher.com/v1/doge/main/addrs/" + addr + "/balance");
+    let data = await res.json();
+
+    let balance = data.balance / 100000000;
+
+    let priceRes = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd");
+    let priceData = await priceRes.json();
+
+    let price = priceData.dogecoin.usd;
+    let usdValue = (balance * price).toFixed(2);
+
+    document.getElementById("balance").innerText = "🐶 Balance: " + balance + " DOGE";
+    document.getElementById("usd").innerText = "💵 USD: $" + usdValue;
+
+    let mood = document.getElementById("mood");
+    let doge = document.getElementById("dogeGif");
+    let moon = document.getElementById("moonText");
+
+    if (balance > lastBalance) {
+      mood.innerText = "😄 rich doge";
+
+      doge.classList.add("bounce");
+      setTimeout(() => doge.classList.remove("bounce"), 500);
+
+      if (balance - lastBalance > 10) {
+        moon.innerText = "🚀 BIG DOGE ENERGY 🚀";
+        moon.classList.add("moon");
+      } else {
+        moon.innerText = "";
+      }
+
+    } else if (balance < lastBalance) {
+      mood.innerText = "😔 poor doge";
+      moon.innerText = "";
+    } else {
+      mood.innerText = "😐 same doge";
+      moon.innerText = "";
+    }
+
+    lastBalance = balance;
+
+  } catch {
+    document.getElementById("balance").innerText = "⚠️ invalid wallet";
+
+    
+  }
+}
+
+// auto load price in le start
+updatePrice();
+</script>
+
+</body>
+</html>
